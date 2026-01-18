@@ -1,38 +1,19 @@
 import asyncio
-from dataclasses import dataclass
-from enum import Enum
+
 from pathlib import Path
 from typing import Optional
 
 import typer
-from dotenv import load_dotenv
 
+from cli.config import Provider, Browser, RunConfig
 from cli.console_singleton import Console
+from cli.enter_api_key import enter_api_key
 from cli.panel import show_main_panel
+from models import ApiKey
 
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 console = Console()
-
-
-class Provider(str, Enum):
-    openai = 'openai'
-    anthropic = 'anthropic'
-
-
-class Browser(str, Enum):
-    chrome = 'chrome'
-    firefox = 'firefox'
-
-
-@dataclass
-class RunConfig:
-    provider: Provider
-    model: str
-    browser: Browser
-    profile_dir: Path
-    max_steps: int
-    trace: bool
 
 
 @app.command()
@@ -48,8 +29,6 @@ def run(
     """
     Runs agent
     """
-    load_dotenv()
-
     cfg = RunConfig(
         provider=provider,
         model=model,
@@ -61,7 +40,11 @@ def run(
 
     show_main_panel(cfg)
 
+    if not asyncio.run(ApiKey.objects.filter(name=provider).exists()):
+        enter_api_key(cfg)
+
     try:
-        asyncio.run(...)
+        # asyncio.run(...)
+        pass
     except KeyboardInterrupt:
         console.print('\nInterrupted by user.')
