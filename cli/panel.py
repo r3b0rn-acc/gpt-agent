@@ -1,23 +1,17 @@
 import tomllib
 from pathlib import Path
-from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
 import rich
 from rich.console import Group
 from rich.panel import Panel
-from rich.style import Style
 from rich.table import Table
 from rich.text import Text
 
+from cli import STYLES
+
 if TYPE_CHECKING:
     from cli.app import RunConfig
-
-
-STYLES = SimpleNamespace(
-    primary=Style(color="#bcbec4"),
-    secondary=Style(color="#6d6e73")
-)
 
 
 def _get_version() -> str:
