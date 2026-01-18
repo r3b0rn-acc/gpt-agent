@@ -2,16 +2,18 @@ import tomllib
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import rich
 from rich.console import Group
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from cli import STYLES
+from cli import STYLES, Console
 
 if TYPE_CHECKING:
     from cli.app import RunConfig
+
+
+console = Console()
 
 
 def _get_version() -> str:
@@ -49,4 +51,4 @@ def show_main_panel(cfg: 'RunConfig') -> None:
         Text(cfg.browser, style=STYLES.primary)
     )
 
-    rich.print(Panel(Group(header, Text(""), table), width=40))
+    console.print(Panel(Group(header, Text(""), table), width=40))
