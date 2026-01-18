@@ -21,11 +21,8 @@ def enter_api_key(cfg: 'RunConfig') -> None:
 
     api_key = ''
     while not api_key:
-        try:
-            api_key = console.input(Text("API key: ", style=STYLES.primary)).strip()
-        except KeyboardInterrupt:
-            console.print("\nCancelled by user.")
-            raise
+        api_key = console.input(Text("API key: ", style=STYLES.primary)).strip()
+
         if not api_key:
             console.print(Text("API key cannot be empty. Try again.", style=STYLES.warning))
 
