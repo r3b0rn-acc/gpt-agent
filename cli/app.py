@@ -4,11 +4,14 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+from rich.text import Text
 
+from cli import STYLES
 from cli.config import Provider, Browser, RunConfig
 from cli.console_singleton import Console
 from cli.enter_api_key import enter_api_key
 from cli.panel import show_main_panel
+from cli.user_io import CLIUserIO
 from models import ApiKey
 
 
@@ -37,13 +40,17 @@ def run(
         max_steps=max_steps,
         trace=trace,
     )
-
-    show_main_panel(cfg)
-
-    if not asyncio.run(ApiKey.objects.filter(name=provider).exists()):
-        enter_api_key(cfg)
-
     try:
+        show_main_panel(cfg)
+
+        if not asyncio.run(ApiKey.objects.filter(name=provider).exists()):
+            enter_api_key(cfg)
+
+        while not task:
+            task = CLIUserIO.input()
+            if not task:
+                console.print(Text("Task cannot be empty. Try again.", style=STYLES.warning))
+
         # asyncio.run(...)
         pass
     except KeyboardInterrupt:
