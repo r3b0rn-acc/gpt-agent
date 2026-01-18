@@ -1,0 +1,6 @@
+class Orchestrator:
+    def __init__(self):
+        ...
+
+    async def run(self, task: str):
+        ...
