@@ -13,9 +13,12 @@ class CLIUserIO:
     """
 
     @staticmethod
-    def ask(question: str) -> str:
-        console.print(Text(question, style=STYLES.primary))
+    def input():
         return console.input(Text(">> ", style=STYLES.secondary)).strip()
+
+    def ask(self, question: str) -> str:
+        console.print(Text(question, style=STYLES.primary))
+        return self.input()
 
     @staticmethod
     def confirm(action_summary: str) -> bool:
