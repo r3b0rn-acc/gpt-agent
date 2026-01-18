@@ -8,6 +8,7 @@ import typer
 from dotenv import load_dotenv
 
 from cli.console_singleton import Console
+from cli.panel import show_main_panel
 
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
@@ -57,6 +58,8 @@ def run(
         max_steps=max_steps,
         trace=trace,
     )
+
+    show_main_panel(cfg)
 
     try:
         asyncio.run(...)
