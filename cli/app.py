@@ -6,12 +6,14 @@ from typing import Optional
 import typer
 from rich.text import Text
 
+from agent.orchestrator import Orchestrator
 from cli.config import Provider, Browser, RunConfig
-from cli.io import Console, CLIUserIO
-from cli.ui import enter_api_key, show_main_panel, STYLES
-
+from cli.io import Console
+from cli.ui.enter_api_key import enter_api_key
+from cli.ui.get_task import get_task
+from cli.ui.panel import show_main_panel
+from cli.ui.styles import STYLES
 from models import ApiKey
-
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 console = Console()
@@ -38,18 +40,27 @@ def run(
         max_steps=max_steps,
         trace=trace,
     )
-    try:
+
+    orchestrator = Orchestrator(cfg)
+
+    async def run_cli():
         show_main_panel(cfg)
 
-        if not asyncio.run(ApiKey.objects.filter(name=provider).exists()):
+        if not await ApiKey.objects.filter(name=cfg.provider).exists():
             enter_api_key(cfg)
 
-        while not task:
-            task = CLIUserIO.input()
-            if not task:
-                console.print(Text("Task cannot be empty. Try again.", style=STYLES.warning))
+        current_task = task
+        if current_task:
+            console.print(Text.assemble((">> ", STYLES.secondary), (current_task, STYLES.primary)))
 
-        # asyncio.run(...)
-        pass
+        while True:
+            current_task = current_task or get_task()
+            if not current_task:
+                break
+            await orchestrator.run(current_task)
+            current_task = None
+
+    try:
+        asyncio.run(run_cli())
     except KeyboardInterrupt:
         console.print('\nInterrupted by user.')
