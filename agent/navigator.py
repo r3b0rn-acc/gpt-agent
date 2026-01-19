@@ -13,6 +13,7 @@ class ActionType(str, Enum):
     reload = "reload"
     scroll = "scroll"
     snapshot = "snapshot"
+    done = "done"
 
 
 @dataclass(frozen=True)
