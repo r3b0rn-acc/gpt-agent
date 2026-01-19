@@ -1,6 +1,7 @@
 from rich.text import Text
 
-from cli import Console, STYLES
+from cli.io.console_singleton import Console
+from cli.ui.styles import STYLES
 
 
 console = Console()

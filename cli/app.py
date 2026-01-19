@@ -6,12 +6,10 @@ from typing import Optional
 import typer
 from rich.text import Text
 
-from cli import STYLES
 from cli.config import Provider, Browser, RunConfig
-from cli.console_singleton import Console
-from cli.enter_api_key import enter_api_key
-from cli.panel import show_main_panel
-from cli.user_io import CLIUserIO
+from cli.io import Console, CLIUserIO
+from cli.ui import enter_api_key, show_main_panel, STYLES
+
 from models import ApiKey
 
 

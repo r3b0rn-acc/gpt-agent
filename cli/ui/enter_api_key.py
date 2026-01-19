@@ -2,7 +2,8 @@ import asyncio
 
 from rich.text import Text
 
-from cli import Console, STYLES
+from cli.io import Console
+from cli.ui.styles import STYLES
 
 from typing import TYPE_CHECKING
 

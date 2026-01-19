@@ -7,7 +7,8 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from cli import STYLES, Console
+from cli.io import Console
+from cli.ui.styles import STYLES
 
 if TYPE_CHECKING:
     from cli.app import RunConfig
