@@ -1,87 +1,17 @@
-from dataclasses import dataclass, asdict
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+
+from agent.extractor.policy.base import apply_policy
+from agent.extractor.structures import PageSnapshot, LinkInfo, InputInfo, ButtonInfo, ImageInfo
 
 if TYPE_CHECKING:
     from playwright.async_api import Page
-
-
-@dataclass(frozen=True)
-class LinkInfo:
-    text: str
-    href: str
-    selector: str = ""
-
-
-@dataclass(frozen=True)
-class InputInfo:
-    name: str
-    input_type: str
-    placeholder: str
-    selector: str = ""
-
-
-@dataclass(frozen=True)
-class ButtonInfo:
-    text: str
-    selector: str
-    aria_label: str = ""
-    button_type: str = ""
-    disabled: bool = False
-
-
-@dataclass(frozen=True)
-class ImageInfo:
-    src: str
-    alt: str
-    selector: str
-    title: str = ""
-    aria_label: str = ""
-    width: int = 0
-    height: int = 0
-
-
-@dataclass(frozen=True)
-class PageSnapshot:
-    url: str
-    title: str
-    text: str
-    links: List[LinkInfo]
-    inputs: List[InputInfo]
-    buttons: List[ButtonInfo]
-    images: List[ImageInfo]
-    screenshot_base64: Optional[str] = None
-
-    def to_summary(self, max_len: int = 800) -> str:
-        text = self.text
-        if len(text) > max_len:
-            text = text[: max_len - 3] + "..."
-        return text
-
-    def to_payload(
-        self,
-        *,
-        max_text_len: int = 2000,
-        max_items: int = 50,
-        include_screenshot: bool = False,
-    ) -> Dict[str, Any]:
-        payload: Dict[str, Any] = {
-            "url": self.url,
-            "title": self.title,
-            "text": self.to_summary(max_text_len),
-            "links": [asdict(link) for link in self.links[:max_items]],
-            "inputs": [asdict(input_info) for input_info in self.inputs[:max_items]],
-            "buttons": [asdict(button) for button in self.buttons[:max_items]],
-            "images": [asdict(image) for image in self.images[:max_items]],
-        }
-        if include_screenshot and self.screenshot_base64:
-            payload["screenshot_base64"] = self.screenshot_base64
-
-        return payload
+    from agent.extractor.policy.base import Policy
 
 
 class Extractor:
-    def __init__(self, page: 'Page'):
+    def __init__(self, page: 'Page', policies: Optional[list['Policy']] = None):
         self.page = page
+        self.policies = policies or []
 
     async def extract(self) -> PageSnapshot:
         return PageSnapshot(
@@ -124,10 +54,11 @@ class Extractor:
         }
         """)
 
+    @apply_policy("links")
     async def collect_links(self) -> list[LinkInfo]:
         await self.page.wait_for_load_state("networkidle")
 
-        locator = self.page.locator("a[href]")
+        locator = self.page.locator("a")
         count = await locator.count()
 
         links = []
@@ -136,11 +67,8 @@ class Extractor:
             el = locator.nth(i)
 
             text = (await el.inner_text()).strip()
-            href = await el.get_attribute("href")
+            href = await el.get_attribute("href") or ""
             selector = await self.build_selector_for_element(el)
-
-            if not href:
-                continue
 
             links.append(
                 LinkInfo(
@@ -152,7 +80,8 @@ class Extractor:
 
         return links
 
-    async def collect_inputs(self, include_hidden=False) -> list[InputInfo]:
+    @apply_policy("inputs")
+    async def collect_inputs(self) -> list[InputInfo]:
         await self.page.wait_for_load_state("networkidle")
 
         locator = self.page.locator("input")
@@ -168,9 +97,6 @@ class Extractor:
             placeholder = await el.get_attribute("placeholder") or ""
             selector = await self.build_selector_for_element(el)
 
-            if not include_hidden and input_type == "hidden":
-                continue
-
             inputs.append(
                 InputInfo(
                     name=name,
@@ -182,6 +108,7 @@ class Extractor:
 
         return inputs
 
+    @apply_policy("buttons")
     async def collect_buttons(self) -> list[ButtonInfo]:
         await self.page.wait_for_load_state("networkidle")
 
@@ -211,6 +138,7 @@ class Extractor:
 
         return buttons
 
+    @apply_policy("images")
     async def collect_images(self) -> list[ImageInfo]:
         await self.page.wait_for_load_state("networkidle")
 
