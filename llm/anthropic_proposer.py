@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from cli.config import RunConfig
-    from agent.navigator import ActionProposal
     from agent.extractor.extractor import PageSnapshot
+    from agent.navigator.actions.structures import ActionProposal
 
 
 class ClaudeProposer:

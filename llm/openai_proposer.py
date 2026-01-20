@@ -5,9 +5,11 @@ from typing import TYPE_CHECKING, Any
 
 from openai import OpenAI
 
-from agent.actions import ActionType, build_tool_specs
-from agent.navigator import ActionProposal
-from agent.prompt import SYSTEM_PROMPT
+from agent.navigator.actions.structures import ActionProposal, ActionType
+
+from llm.prompt import SYSTEM_PROMPT
+from llm.tools import build_tool_specs
+
 from models import ApiKey
 
 if TYPE_CHECKING:
