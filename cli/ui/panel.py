@@ -26,6 +26,8 @@ def _get_version() -> str:
 
 
 def show_main_panel(cfg: 'RunConfig') -> None:
+    """Отображает панель с основной информацией по агенту"""
+
     header = Table.grid(expand=True)
 
     header.add_column(justify="left", no_wrap=True)

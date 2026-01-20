@@ -17,6 +17,8 @@ console = Console()
 
 
 def enter_api_key(cfg: 'RunConfig') -> None:
+    """Сценарий ввода API ключа"""
+
     console.print(Text(f"No API key found for {cfg.provider.name}.", style=STYLES.warning))
     console.print(Text("Paste your key below; press Enter to continue.", style=STYLES.secondary))
 
