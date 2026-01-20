@@ -9,17 +9,33 @@ console = Console()
 
 class CLIUserIO:
     """
-    Слой через который LLM будет общаться с юзером.
-    Оркестратор должен вызывать ask() / confirm().
-    """
+    Слой пользовательского ввода и вывода в CLI.
 
+    Отвечает за:
+    - отображение нейтральных сообщений агента (print);
+    - получение пользовательского ввода (input).
+    """
     @staticmethod
     def input():
         return console.input(Text(">> ", style=STYLES.secondary)).strip()
 
-    def ask(self, question: str) -> str:
+    @staticmethod
+    def print(action_summary: str) -> None:
+        console.print(Text.assemble(('• ', STYLES.secondary), (action_summary, STYLES.primary)))
+
+
+class CLIClarificationIO:
+    """
+    Слой уточнений и подтверждений для потенциально значимых действий.
+
+    Используется оркестратором в случаях, когда требуется:
+    - запросить дополнительную информацию (ask);
+    - подтвердить действие перед выполнением (confirm).
+    """
+    @staticmethod
+    def ask(question: str) -> str:
         console.print(Text(question, style=STYLES.primary))
-        return self.input()
+        return CLIUserIO().input()
 
     @staticmethod
     def confirm(action_summary: str) -> bool:
