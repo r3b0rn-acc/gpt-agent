@@ -1,19 +1,23 @@
+import typer
+
 import asyncio
 
 from pathlib import Path
 from typing import Optional
 
-import typer
 from rich.text import Text
 
 from agent.orchestrator import Orchestrator
+
 from cli.config import Provider, Browser, RunConfig
-from cli.io import Console
+from cli.io import Console, CLIUserIO, CLIClarificationIO
 from cli.ui.enter_api_key import enter_api_key
 from cli.ui.get_task import get_task
 from cli.ui.panel import show_main_panel
 from cli.ui.styles import STYLES
+
 from models import ApiKey
+
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 console = Console()
@@ -30,7 +34,7 @@ def run(
     trace: bool = typer.Option(False, '--trace', help='Enable Playwright tracing (if implemented)'),
 ):
     """
-    Runs agent
+    Runs browser surfing agent
     """
     cfg = RunConfig(
         provider=provider,
@@ -41,7 +45,11 @@ def run(
         trace=trace,
     )
 
-    orchestrator = Orchestrator(cfg)
+    orchestrator = Orchestrator(
+        config=cfg,
+        io_manager=CLIUserIO(),
+        clarification_manager=CLIClarificationIO(),
+    )
 
     async def run_cli():
         show_main_panel(cfg)
