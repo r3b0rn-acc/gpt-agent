@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Optional, Protocol, Any
 
-from agent.navigator import Action
-from agent.risk import ActionRisk
+from agent.navigator.actions import Action
+from agent.navigator.actions.structures import ActionRisk
 from cli.config import Provider
 
 from llm.anthropic_proposer import ClaudeProposer
@@ -10,8 +10,8 @@ from llm.openai_proposer import OpenAIProposer
 if TYPE_CHECKING:
     from llm.base import Proposer
     from cli.config import RunConfig
-    from agent.navigator import ActionProposal
     from agent.extractor.extractor import PageSnapshot
+    from agent.navigator.actions.structures import ActionProposal
 
 
 class IOManager(Protocol):
