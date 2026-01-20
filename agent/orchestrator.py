@@ -4,11 +4,11 @@ from agent.navigator.actions import Action
 from agent.navigator.actions.structures import ActionRisk
 from cli.config import Provider
 
-from llm.anthropic_proposer import ClaudeProposer
-from llm.openai_proposer import OpenAIProposer
+from agent.llm.anthropic_proposer import ClaudeProposer
+from agent.llm.openai_proposer import OpenAIProposer
 
 if TYPE_CHECKING:
-    from llm.base import Proposer
+    from agent.llm.base import Proposer
     from cli.config import RunConfig
     from agent.extractor.extractor import PageSnapshot
     from agent.navigator.actions.structures import ActionProposal
