@@ -7,8 +7,8 @@ from openai import OpenAI
 
 from agent.navigator.actions.structures import ActionProposal, ActionType
 
-from llm.prompt import SYSTEM_PROMPT
-from llm.tools import build_tool_specs
+from agent.llm.prompt import SYSTEM_PROMPT
+from agent.llm.tools import build_tool_specs
 
 from models import ApiKey
 
