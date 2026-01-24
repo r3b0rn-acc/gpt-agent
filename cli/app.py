@@ -45,17 +45,17 @@ def run(
         trace=trace,
     )
 
-    orchestrator = Orchestrator(
-        config=cfg,
-        io_manager=CLIUserIO(),
-        clarification_manager=CLIClarificationIO(),
-    )
-
     async def run_cli():
         show_main_panel(cfg)
 
         if not await ApiKey.objects.filter(name=cfg.provider).exists():
             enter_api_key(cfg)
+
+        orchestrator = Orchestrator(
+            config=cfg,
+            io_manager=CLIUserIO(),
+            clarification_manager=CLIClarificationIO(),
+        )
 
         current_task = task
         if current_task:
